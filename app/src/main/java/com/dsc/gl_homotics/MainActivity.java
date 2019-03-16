@@ -337,7 +337,7 @@ public class MainActivity extends Activity {
             a = 0;
         } else {
             if (a == 1) {
-                EventListeners mEventListeners = new EventListeners();
+                EventListeners mEventListeners = new EventListeners(getApplicationContext());
                 mEventListeners.dcMotorEventListener();
                 mEventListeners.gazEventListener();
                 mEventListeners.ledEventListener();

@@ -1,6 +1,8 @@
 package com.dsc.gl_homotics;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.dsc.gl_homotics.Model.HObject;
 import com.google.firebase.database.DataSnapshot;
@@ -8,21 +10,31 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import static android.content.ContentValues.TAG;
 
 class EventListeners {
     private DatabaseReference databaseReference;
     private HObject mObject;
+    private Context context;
+    private String response;
 
-    EventListeners() {
+    EventListeners(Context context) {
+        this.context = context;
         this.databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
 
     void gazEventListener() {
+
         ValueEventListener valueEventListenerGaz = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mObject = dataSnapshot.getValue(HObject.class);
+//                Gaz
             }
 
             @Override
@@ -39,6 +51,29 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+                String state = mObject.getState();
+                if(state.equals("On") || state.equals("on")){
+                    state = "on";
+                }else{
+                    state = "off";
+                }
+                String url = "http://192.168.0.101:8000/api/motor/"+state;
+
+                JsonObject json = new JsonObject();
+                json.addProperty("token", "28aa93c3251a4dd696a060cd50ece759");
+                json.addProperty("id", "2");
+
+                Ion.with(context)
+                        .load(url)
+                        .setJsonObjectBody(json)
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                Log.d(TAG, "onCompleted: "+ result);
+                            }
+                        });
+//                DC Motor
             }
 
             @Override
@@ -55,6 +90,29 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+//                Light Control
+                String state = mObject.getState();
+                if(state.equals("On") || state.equals("on")){
+                    state = "on";
+                }else{
+                    state = "off";
+                }
+                String url = "http://192.168.0.101:8000/api/light/"+state;
+
+                JsonObject json = new JsonObject();
+                json.addProperty("token", "28aa93c3251a4dd696a060cd50ece759");
+                json.addProperty("id", "1");
+
+                Ion.with(context)
+                        .load(url)
+                        .setJsonObjectBody(json)
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                Log.d(TAG, "onCompleted: "+ result);
+                            }
+                        });
             }
 
             @Override
@@ -72,6 +130,7 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+//                Temperature Sensor
             }
 
             @Override
@@ -89,6 +148,27 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+//                RGB Color
+                String state = mObject.getState();
+                if(state.equals("") || state.equals("Off") || state.equals("off")){
+                    state = "000000";
+                }
+                String url = "http://192.168.0.101:8000/api/rgbControl";
+
+                JsonObject json = new JsonObject();
+                json.addProperty("token", "28aa93c3251a4dd696a060cd50ece759");
+                json.addProperty("color", ""+state);
+
+                Ion.with(context)
+                        .load(url)
+                        .setJsonObjectBody(json)
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                Log.d(TAG, "onCompleted: "+ result);
+                            }
+                        });
             }
 
             @Override
@@ -107,6 +187,7 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+//                USM Sensor
             }
 
             @Override
@@ -125,6 +206,7 @@ class EventListeners {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HObject mObject = dataSnapshot.getValue(HObject.class);
+//                Relay Module
             }
 
             @Override
