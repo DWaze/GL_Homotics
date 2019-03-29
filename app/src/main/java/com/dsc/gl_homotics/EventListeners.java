@@ -28,24 +28,6 @@ class EventListeners {
     }
 
 
-    void gazEventListener() {
-
-        ValueEventListener valueEventListenerGaz = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mObject = dataSnapshot.getValue(HObject.class);
-//                Gaz
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        };
-        DatabaseReference databaseReferenceGaz = databaseReference.child("raspberries").child("0").child("rooms").child("0")
-                .child("hObjects").child("0");
-        databaseReferenceGaz.addValueEventListener(valueEventListenerGaz);
-    }
-
     void dcMotorEventListener() {
         ValueEventListener valueEventListenerDCM = new ValueEventListener() {
             @Override
@@ -125,24 +107,6 @@ class EventListeners {
         databaseReferenceLED.addValueEventListener(valueEventListenerLED);
     }
 
-    void tmpEventListener() {
-        ValueEventListener valueEventListenerTMP = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HObject mObject = dataSnapshot.getValue(HObject.class);
-//                Temperature Sensor
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        DatabaseReference databaseReferenceTmp = databaseReference.child("raspberries").child("0").child("rooms").child("0")
-                .child("hObjects").child("3");
-        databaseReferenceTmp.addValueEventListener(valueEventListenerTMP);
-    }
-
     void rgbEventListener() {
         ValueEventListener valueEventListenerRGB = new ValueEventListener() {
             @Override
@@ -182,31 +146,35 @@ class EventListeners {
         databaseReferenceRGB.addValueEventListener(valueEventListenerRGB);
     }
 
-    void usmEventListener() {
-        ValueEventListener valueEventListenerUSM = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HObject mObject = dataSnapshot.getValue(HObject.class);
-//                USM Sensor
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        DatabaseReference databaseReferenceUSM = databaseReference.child("raspberries").child("0").child("rooms").child("0")
-                .child("hObjects").child("5");
-        databaseReferenceUSM.addValueEventListener(valueEventListenerUSM);
-    }
-
     void relEventListener() {
         ValueEventListener valueEventListenerRel = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HObject mObject = dataSnapshot.getValue(HObject.class);
 //                Relay Module
+                HObject mObject = dataSnapshot.getValue(HObject.class);
+//                Light Control
+                String state = mObject.getState();
+                if(state.equals("On") || state.equals("on")){
+                    state = "on";
+                }else{
+                    state = "off";
+                }
+                String url = "http://192.168.0.101:8000/api/relay/"+state;
+
+                JsonObject json = new JsonObject();
+                json.addProperty("token", "28aa93c3251a4dd696a060cd50ece759");
+                json.addProperty("id", "1");
+
+                Ion.with(context)
+                        .load(url)
+                        .setJsonObjectBody(json)
+                        .asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception e, JsonObject result) {
+                                Log.d(TAG, "onCompleted: "+ result);
+                            }
+                        });
             }
 
             @Override

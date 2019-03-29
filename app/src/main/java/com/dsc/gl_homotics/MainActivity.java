@@ -47,7 +47,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        TempThread tmp;
+        GazThread gazThread;
+        UltraThread ultraThread;
         databaseReference = FirebaseDatabase.getInstance().getReference();
         int a = 1;
 
@@ -334,16 +336,20 @@ public class MainActivity extends Activity {
 
 
             databaseReference.setValue(home);
-            a = 0;
+
         } else {
             if (a == 1) {
                 EventListeners mEventListeners = new EventListeners(getApplicationContext());
+                tmp = new TempThread(getApplicationContext());
+                tmp.start();
+                gazThread = new GazThread(getApplicationContext());
+                gazThread.start();
+                ultraThread = new UltraThread(getApplicationContext());
+                ultraThread.start();
+
                 mEventListeners.dcMotorEventListener();
-                mEventListeners.gazEventListener();
                 mEventListeners.ledEventListener();
                 mEventListeners.rgbEventListener();
-                mEventListeners.tmpEventListener();
-                mEventListeners.usmEventListener();
                 mEventListeners.relEventListener();
 
             } else {
